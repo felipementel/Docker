@@ -1,0 +1,90 @@
+# ❯ docker-compose -f .\docker-compose.yaml up --build
+# > docker exec -it redis-vale redis-cli -h 127.0.0.1 -p 6379 -a Psw5971! 
+
+version: '3.8'
+
+services:
+  # func-offers:
+  #   build: 
+  #     dockerfile: Marketplace.B2C.Offers.Functions/Dockerfile
+  #     context: .
+  #   image: imagem-offers
+  #   container_name: func-offers
+  #   ports: 
+  #     - 9091:9091
+  #   networks:
+  #     - mongo-compose-network
+
+  redis:
+    image: redis:6.0.10-alpine
+    restart: always
+    container_name: redis-vale
+    command: redis-server --requirepass Psw5971!
+    ports:
+      - "6379:6379"
+    volumes:
+      - c:/temp/redis-data:/var/lib/redis
+      - c:/temp/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+     - REDIS_REPLICATION_MODE=master
+    networks: 
+      - mongo-compose-network
+
+  storage-account:
+    image: mcr.microsoft.com/azure-storage/azurite
+    hostname: azurite
+    container_name: sto-vale
+    restart: always
+    ports:
+      - "8888:8888"
+      - "9999:9999"
+    volumes:
+     - c:/temp/azurite:/data
+    networks: 
+      - mongo-compose-network
+      
+  mongo:
+    image: mongo:4.4.4-bionic
+    restart: always
+    container_name: mongo-vale
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Psw5971!
+      MONGO_INITDB_DATABASE: marketplace
+    ports:
+      - "27017:27017"
+    # volumes:
+    #    - c:/temp/MongoDb2:/data/db
+    networks: 
+      - mongo-compose-network
+
+  # mongo_seed
+    
+  mongo-express:
+    image: mongo-express:0.54.0
+    restart: always
+    container_name: mongoexp-vale
+    ports:
+      - 9031:8081
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: wechatAdmin
+      ME_CONFIG_BASICAUTH_PASSWORD: Psw5971!
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: Psw5971!
+    links:
+      - mongo
+    networks: 
+      - mongo-compose-network
+    # networks: 
+    #   mongo-compose-network:
+    #     ipv4_address: 192.168.0.100
+    depends_on: 
+      - mongo
+
+networks: 
+    mongo-compose-network:
+      driver: bridge
+      # ipam:
+      #   config:
+      #     - subnet: 192.168.0.0/24
