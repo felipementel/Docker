@@ -23,8 +23,8 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - c:/temp/redis-data:/var/lib/redis
-      - c:/temp/redis.conf:/usr/local/etc/redis/redis.conf
+      - /mnt/c/temp/redis-data:/var/lib/redis
+      - /mnt/c/temp/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
      - REDIS_REPLICATION_MODE=master
     networks: 
@@ -39,7 +39,7 @@ services:
       - "8888:8888"
       - "9999:9999"
     volumes:
-     - c:/temp/azurite:/data
+     - /mnt/c/temp/azurite:/data
     networks: 
       - mongo-compose-network
       
@@ -53,8 +53,8 @@ services:
       MONGO_INITDB_DATABASE: marketplace
     ports:
       - "27017:27017"
-    # volumes:
-    #    - c:/temp/MongoDb2:/data/db
+    volumes:
+       - /mnt/c/temp/mongo:/data/db    
     networks: 
       - mongo-compose-network
 
