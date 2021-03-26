@@ -1,24 +1,24 @@
 # ❯ docker-compose -f .\docker-compose.yaml up --build
-# > docker exec -it redis-vale redis-cli -h 127.0.0.1 -p 6379 -a Psw5971! 
+# > docker exec -it redis-sportstore redis-cli -h 127.0.0.1 -p 6379 -a Psw5971! 
 
 version: '3.8'
 
 services:
-  # func-offers:
-  #   build: 
-  #     dockerfile: Marketplace.B2C.Offers.Functions/Dockerfile
-  #     context: .
-  #   image: imagem-offers
-  #   container_name: func-offers
-  #   ports: 
-  #     - 9091:9091
-  #   networks:
-  #     - mongo-compose-network
+  func-client:
+    build: 
+      dockerfile: <FOLDER>/Dockerfile
+      context: .
+    image: imagem-client
+    container_name: func-client
+    ports: 
+      - 9091:9091
+    networks:
+      - mongo-compose-network
 
   redis:
     image: redis:6.0.10-alpine
     restart: always
-    container_name: redis-vale
+    container_name: redis-sportstore
     command: redis-server --requirepass Psw5971!
     ports:
       - "6379:6379"
@@ -33,7 +33,7 @@ services:
   storage-account:
     image: mcr.microsoft.com/azure-storage/azurite
     hostname: azurite
-    container_name: sto-vale
+    container_name: sto-sportstore
     restart: always
     ports:
       - "8888:8888"
@@ -46,11 +46,11 @@ services:
   mongo:
     image: mongo:4.4.4-bionic
     restart: always
-    container_name: mongo-vale
+    container_name: mongo-sportstore
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: Psw5971!
-      MONGO_INITDB_DATABASE: marketplace
+      MONGO_INITDB_DATABASE: sportstore
     ports:
       - "27017:27017"
     volumes:
@@ -63,7 +63,7 @@ services:
   mongo-express:
     image: mongo-express:0.54.0
     restart: always
-    container_name: mongoexp-vale
+    container_name: mongoexp-sportstore
     ports:
       - 9031:8081
     environment:
