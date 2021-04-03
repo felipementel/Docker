@@ -1,0 +1,38 @@
+# https://hub.docker.com/_/mysql
+
+# Access the client: http://localhost:9835
+# server: db (line 9)
+# username: user (line 14)
+# password: abcd123456789 (line 15)
+
+version: '3.6'
+services:
+  db:
+    image: mysql:8.0.23
+    restart: always
+    environment:
+      MYSQL_DATABASE: dbCreated
+      MYSQL_USER: user
+      MYSQL_PASSWORD: abcd123456789
+      MYSQL_ROOT_PASSWORD: $f3kE43
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - ./data:/var/lib/mysql
+
+  app:
+    image: phpmyadmin/phpmyadmin:latest
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - 9835:80
+    environment:
+      - PMA_ARBITRARY=1
+
+volumes:
+   db-mysql:
