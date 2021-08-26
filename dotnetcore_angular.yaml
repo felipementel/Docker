@@ -1,0 +1,148 @@
+# https://github.com/microsoft/azure-pipelines-yaml/blob/master/templates/asp.net-core-functionapp-to-windows-on-azure.yml
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/test/publish-test-results?view=azure-devops&tabs=trx%2Cyaml
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/dotnet-core?view=azure-devops&tabs=dotnetfive
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/run-number?view=azure-devops&tabs=yaml
+
+name: wapp-crm-sales-sapcoderequester-dev-$(Date:yyyyMMdd)-$(Rev:r)
+
+resources:
+  repositories:
+  - repository: self
+    type: AzureRepos
+    trigger:
+      branches:
+        include:
+        - dev
+      paths:
+        include:
+        - src/*
+        exclude:
+        - README.md
+
+variables:
+- name: appName
+  value: 'wapp-crm-sales-sapcoderequester-dev'
+- name: buildConfiguration
+  value: Release
+- name: serviceConnection
+  value: 'sc-rg-crm-dev'
+- name: vmImageName
+  value: 'windows-2019'
+- name: workingDirectory
+  value: src/Vale.CRM.Sales.SAPCodeRequester
+
+pool:
+  vmImage: $(vmImageName)
+
+
+stages:
+- stage: Build
+  displayName: Build stage
+
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+
+    - task: UseDotNet@2
+      displayName: Use .net Core 3.1
+      inputs:
+        version: '3.1.x'
+        includePreviewVersions: false
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet restore'
+      inputs:
+        command: restore
+        projects: '**/*.sln'
+        feedsToUse: config
+        nugetConfigPath: 'src/nuget.config'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet build'
+      inputs:
+        command: 'build'
+        projects: |
+          $(workingDirectory)/*.csproj
+        arguments: --configuration $(buildConfiguration)
+    
+    - task: NodeTool@0
+      displayName: Use Node 10.24.1
+      inputs:
+        versionSpec: 10.24.1
+
+    - task: Npm@1
+      displayName: "npm install"
+      inputs:
+        command: 'install'
+        workingDir: $(workingDirectory)/ClientApp
+
+    - task: Npm@1
+      displayName: "npm run build:$(buildConfiguration)"
+      inputs:
+        command: 'custom'
+        workingDir: $(workingDirectory)/ClientApp/src
+        customCommand: 'run build'
+    
+    - task: DotNetCoreCLI@2
+      displayName: 'dotnet test'
+      inputs:
+        command: 'test'
+        projects: '**/*Tests/*.csproj'
+        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+        testRunTitle: 'Project Offers'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+    
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+    
+    - task: DotNetCoreCLI@2
+      displayName: "dotnet publish $(buildConfiguration)"
+      inputs:
+        command: 'publish'
+        publishWebProjects: True
+        arguments: --output $(System.DefaultWorkingDirectory)/publish_output --configuration $(buildConfiguration)
+        zipAfterPublish: false
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/publish_output'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Deploy_DEV
+  displayName: Deploy DEV
+  dependsOn: Build
+  condition: succeeded()
+
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'Azure Vale CRM DEV'
+    variables:
+      - group: vg-crm-dev
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Azure web app deploy'
+            inputs:
+              azureSubscription: $(serviceConnection)
+              appType: webApp
+              appName: $(appName)
+              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
