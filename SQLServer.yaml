@@ -1,0 +1,19 @@
+# docs #
+# https://docs.docker.com/samples/aspnet-mssql-compose/
+# https://hub.docker.com/_/microsoft-mssql-server
+# how to run: docker-compose -f .\SQLServer-dc.yaml up --build
+
+version: "3.9"
+services:
+  mssql-server:
+    image: mcr.microsoft.com/mssql/server:2019-CU12-ubuntu-20.04
+    container_name: sqlServer-docker
+    restart: always
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "psw#5579"
+      MSSQL_PID: Developer #Options: Developer, Express, Standard, Enterprise, EnterpriseCore
+    ports:
+      - "1433:1433"
+    volumes:
+      - C:\docker\volumes\sqlserver:/var/opt/mssql/data
