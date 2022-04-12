@@ -1,0 +1,16 @@
+docker container run --name felipe-mariadb --volume /mnt/c/_training/container/mariadb:/var/lib/mysql --env MARIADB_USER=felipe-user --env MARIADB_ROOT_PASSWORD=mariadbpass --env MARIADB_DATABASE=FelipeMariaDB --restart always -p 3306:3306 --detach mariadb:10.7.3
+
+---
+
+docker container run --name felipe-mongodb --volume /data/db --env MONGO_INITDB_ROOT_USERNAME=root --env MONGO_INITDB_ROOT_PASSWORD=abc1234 --env --restart always -p 27017:27017 --detach mongo:5.0.6 --wiredTigerCacheSizeGB 1.5
+
+---
+
+docker container run --name felipe-postgres --volume /var/lib/postgresql/data --env POSTGRES_USER=root --env POSTGRES_PASSWORD=abc1234 --env POSTGRES_DB=FelipeDB --env  POSTGRES_INITDB_ARGS="--data-checksums" --env PGDATA=/var/lib/postgresql/data/pgdata --restart always -p 5432:5432 --detach postgres:14.2
+
+---
+
+docker container run --name felipe-redis -p 6379:6379 --volume /data --detach redis:6.2.6
+
+---
+
