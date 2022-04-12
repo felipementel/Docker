@@ -1,0 +1,90 @@
+#WSL
+
+sudo apt install docker-compose
+
+> sudo usermod -aG docker <user_name>
+
+> docker container run -d <image_name>
+> docker container ls -a 
+> docker container ls 
+> docker container run -it ubuntu /bin/bash
+> docker container run --name meuContainer hello-world
+> docker container run -d -p <porta_local>:<porta_container> --network <network_name> -v <volume_name> --name <container_name>
+> docker container run --name nginx-local -p 8087:80 nginx
+> docker container run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=abc1234 mongo -v <volume_name:/data/db>
+> docker container run -d --name nginx nginx
+> docker container inspect <container_id>
+> docker container exec -it <container_id> /bin/bash
+> docker container logs <container_id>
+> docker container logs -n 5 <container_id>
+> docker container logs -f <container_id>
+> docker container logs -t <container_id>
+> docker image tag felipementel/ubuntu-vim-curl-kubectl:v1 felipementel/ubuntu-vim-curl-kubectl:v2
+> docker image push felipementel/ubuntu-vim-curl-kubectl:v2
+> docker build -t <namespace/project_name:tag> -f <path_dockerfile> .</root_src_folder>
+
+> docker volume create <volume_name>
+> docker container run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=abc1234 -v <volume_name> mongo
+
+Criando uma imagem especifica a partir de outra, usando o docker commit
+então vamos criar uma imagem com suas dependencias para poder facilitar algum outro processo de build, por exemplo
+
+1) criar uma contaier comm ubuntu
+> docker container run -it ubuntu /bin/bash
+
+2) vamos atualizar os indices dos pacotes
+> apt-get update 
+
+3) vamos instalar os pacotes atualizados
+> apt-get upgrade
+
+4) vamos instalar o curl
+> apt-get install curl -y
+
+5) agora vamos sair do container e criar essa imagem pra criar outra imagem
+> exit
+> docker container ls -a
+ (pegamos o ID do container com o ubuntu)
+> docker container commit <container_id> <novo_nome_imagem>
+ (agora vamos listar as imagens)
+> docker image ls
+ (pronto, sua imagem base com todas as dependencias esta pronta)
+
+======
+Criando uma imagem especifica a partir de outra, usando o dockerfile
+Vamos abrir o nano
+> nano
+ (agora vamos criar o seguinte conteudo e salvar o arquivo com o nome "Dockerfile")
+
+FROM ubuntu
+RUN apt-get update
+RUN apt-get upgrade --yes
+RUN apt-get install curl --yes
+
+ (agora vamos sair do nano, com Ctrl + x)
+
+ * Para evitar problemas de cache, use a forma concatenada
+
+FROM ubuntu
+RUN apt-get update && apt-get upgrade --yes && apt-get install curl --yes
+
+agora vamos rodar o comando para criar a imagem
+> docker image build -t <container_name> <path_do_dockerfile> | EX: docker image build -t ubuntu-felipe-v2 .
+
+ (fim)
+
+> docker iamge prune
+> docker image rm <container_id>
+> docker image history | para ver cada camada do dockerfile
+
+===
+docker network create <network_name>
+docker network connect <network_name> <container_id OR container_name>
+docker container run -it -v "$(pwd)/vol:/app" ubuntu /bin/bash
+
+
+
+docker rm docker container run -it -v "$(pwd)/vol:/app" ubuntu /bin/bash
+
+ (para conectar num container se ele ja estiver sido criado)
+> docker exec -it <container_id> /bin/bash
