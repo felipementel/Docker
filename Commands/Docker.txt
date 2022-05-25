@@ -4,6 +4,7 @@ sudo apt install docker-compose
 
 > sudo usermod -aG docker <user_name>
 
+> docker login -u <user> -p <access_token>
 > docker container run -d <image_name>
 > docker container ls -a 
 > docker container ls 
