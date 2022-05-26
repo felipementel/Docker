@@ -23,7 +23,7 @@ sudo apt install docker-compose
 > docker image tag felipementel/ubuntu-vim-curl-kubectl:v1 felipementel/ubuntu-vim-curl-kubectl:v2
 > docker image push felipementel/ubuntu-vim-curl-kubectl:v2
 > docker build -t <namespace/project_name:tag> -f <path_dockerfile> .</root_src_folder>
-
+> docker image history <namespace/project_name:tag> | para ver cada camada do dockerfile
 > docker volume create <volume_name>
 > docker container run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=abc1234 -v <volume_name> mongo
 
@@ -76,7 +76,7 @@ agora vamos rodar o comando para criar a imagem
 
 > docker iamge prune
 > docker image rm <container_id>
-> docker image history | para ver cada camada do dockerfile
+
 
 ===
 docker network create <network_name>
