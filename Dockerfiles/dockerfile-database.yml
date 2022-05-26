@@ -2,7 +2,7 @@ docker container run --name felipe-mariadb --volume /mnt/c/_training/container/m
 
 ---
 
-docker container run --name felipe-mongodb --volume /data/db --env MONGO_INITDB_ROOT_USERNAME=root --env MONGO_INITDB_ROOT_PASSWORD=abc1234 --env --restart always -p 27017:27017 --detach mongo:5.0.6 --wiredTigerCacheSizeGB 1.5
+docker container run --name felipe-mongodb --volume /data/db --env MONGO_INITDB_ROOT_USERNAME=root --env MONGO_INITDB_ROOT_PASSWORD=abc1234 --restart always -p 27017:27017 --detach mongo:5.0.6 --wiredTigerCacheSizeGB 1.5
 
 ---
 
