@@ -78,6 +78,10 @@ agora vamos rodar o comando para criar a imagem
 > docker image rm <container_id>
 
 
+docker container rm -f $(docker ps -a -q)
+
+docker volume rm $(docker volume ls -q)
+
 ===
 docker network create <network_name>
 docker network connect <network_name> <container_id OR container_name>
