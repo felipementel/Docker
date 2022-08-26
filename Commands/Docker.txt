@@ -93,3 +93,14 @@ docker rm docker container run -it -v "$(pwd)/vol:/app" ubuntu /bin/bash
 
  (para conectar num container se ele ja estiver sido criado)
 > docker exec -it <container_id> /bin/bash
+
+===============
+
+docker login <REGISTRY_HOST>:<REGISTRY_PORT> -u <USER_NAME>
+docker tag <IMAGE_ID> <REGISTRY_HOST>:<REGISTRY_PORT>/<APPNAME>:<APPVERSION>
+docker push <REGISTRY_HOST>:<REGISTRY_PORT>/<APPNAME>:<APPVERSION>
+Example :
+
+docker login repo.company.com:3456
+docker tag 19fcc4aa71ba repo.company.com:3456/myapp:0.1
+docker push repo.company.com:3456/myapp:0.1
