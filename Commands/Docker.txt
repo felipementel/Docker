@@ -1,8 +1,11 @@
 #WSL
 
+sudo apt install docker.io
 sudo apt install docker-compose
 
 > sudo usermod -aG docker <user_name>
+> update-alternatives --config iptables
+
 
 > docker login -u <user> -p <access_token>
 > docker container run -d <image_name>
