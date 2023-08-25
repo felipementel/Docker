@@ -85,6 +85,10 @@ docker container rm -f $(docker ps -a -q)
 
 docker volume rm $(docker volume ls -q)
 
+docker image rm -f $(docker image ls -a -q)
+
+docker system prune
+
 ===
 docker network create <network_name>
 docker network connect <network_name> <container_id OR container_name>
