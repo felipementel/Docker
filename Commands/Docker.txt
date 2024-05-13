@@ -1,10 +1,11 @@
 #WSL
 
-sudo apt install docker.io
-sudo apt install docker-compose
-
-> sudo usermod -aG docker <user_name>
-> update-alternatives --config iptables
+sudo su
+apt install docker.io
+apt install docker-compose
+chmod +x /usr/local/bin/docker-compose
+usermod -aG docker <user_name>
+update-alternatives --config iptables
 
 
 > docker login -u <user> -p <access_token>
