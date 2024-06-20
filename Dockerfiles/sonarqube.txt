@@ -1,1 +1,1 @@
-docker container run --name sq-avanade -p 9044:9000 sonarqube:9.4.0-developer
+docker container run --name sq-avanade -p 9044:9000 sonarqube:10.5.1-community
