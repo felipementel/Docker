@@ -78,9 +78,9 @@ agora vamos rodar o comando para criar a imagem
 
  (fim)
 
+# Limpando o ambiente local
 > docker iamge prune
 > docker image rm <container_id>
-
 
 docker container rm -f $(docker ps -a -q)
 
