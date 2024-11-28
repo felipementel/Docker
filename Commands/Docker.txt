@@ -112,3 +112,9 @@ Example :
 docker login repo.company.com:3456
 docker tag 19fcc4aa71ba repo.company.com:3456/myapp:0.1
 docker push repo.company.com:3456/myapp:0.1
+
+
+=======
+
+docker container run -d --privileged --name dind2 -p 8084:9000 docker:dind
+docker exec -it dind2 /bin/sh
