@@ -88,7 +88,7 @@ docker volume rm $(docker volume ls -q)
 
 docker image rm -f $(docker image ls -a -q)
 
-docker system prune
+docker system prune -a -f && docker volume prune && docker network prune && docker container prune
 
 ===
 docker network create <network_name>
