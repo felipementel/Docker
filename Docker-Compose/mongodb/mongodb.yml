@@ -1,0 +1,79 @@
+# docker compose -f mongodb.yml --env-file ./mongodb.env up
+# docker compose -f mongodb.yml --env-file ./mongodb.env down --volumes --remove-orphans
+# docker stats --no-stream
+
+# docker system prune -a -f && docker volume prune -f && docker network prune -f && docker container prune -f
+
+# URLs de Acesso:
+# MongoDB: http://localhost:8082
+
+# https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-9.0&tabs=visual-studio
+# https://hub.docker.com/r/mongodb/mongodb-atlas-local
+
+services:
+  mongodb-service:
+    image: mongodb/mongodb-atlas-local:8.0.12-20260121T112103Z
+    container_name: mongodb-container
+    restart: always
+    ports:
+      - 27018:27017
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    healthcheck:
+      test: [ "CMD-SHELL", "mongosh -u ${ADMIN_MONGODB_USER} -p ${ADMIN_MONGODB_PASSWORD} --eval 'db.adminCommand(\"ping\")'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: ${ADMIN_MONGODB_USER}
+      MONGODB_INITDB_ROOT_PASSWORD: ${ADMIN_MONGODB_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      canal-deploy-network:
+        aliases:
+          - mongo
+
+  mongodb-express:
+    image: mongo-express:1.0.2-20-alpine3.19
+    container_name: mongodb-express-container
+    restart: always
+    ports:
+      - 8082:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${ADMIN_MONGODB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${ADMIN_MONGODB_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: mongodb-container
+      ME_CONFIG_MONGODB_URL: mongodb://${ADMIN_MONGODB_USER}:${ADMIN_MONGODB_PASSWORD}@mongodb-container:27017/
+      ME_CONFIG_BASICAUTH: false
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+    depends_on:
+      mongodb-service:
+        condition: service_healthy
+    networks:
+      - canal-deploy-network
+
+networks:
+  canal-deploy-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+    driver: local
+  mongodb-config:
+    driver: local
