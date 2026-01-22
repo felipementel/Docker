@@ -6,6 +6,7 @@
 
 # URLs de Acesso:
 # MongoDB: http://localhost:8082
+# Connection String: mongodb://user-mongo:psw-mongO123@localhost:27018/admin?authSource=admin&directConnection=true
 
 # https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-mongo-app?view=aspnetcore-9.0&tabs=visual-studio
 # https://hub.docker.com/r/mongodb/mongodb-atlas-local
